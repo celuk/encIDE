@@ -6,34 +6,6 @@
 
 #define SCREEN_RATIO 0.9
 
-// wxWidgets Build Info
-enum wxbuildinfoformat {
-    short_f, long_f
-};
-
-wxString wxbuildinfo(wxbuildinfoformat format)
-{
-    wxString wxbuild(wxVERSION_STRING);
-
-    if (format == long_f )
-    {
-        #if defined(__WXMSW__)
-                wxbuild << _("-Windows");
-        #elif defined(__UNIX__)
-                wxbuild << _("-Linux");
-        #endif
-
-        #if wxUSE_UNICODE
-                wxbuild << _("-Unicode build");
-        #else
-                wxbuild << _("-ANSI build");
-        #endif
-    }
-
-    return wxbuild;
-}
-// End of wxWidgets Build Info
-
 // File Menu Items
 const long encIDEFrame::idMenuQuit = wxNewId();
 // End of File Menu Items
@@ -102,6 +74,6 @@ void encIDEFrame::onQuit(wxCommandEvent& event)
 
 void encIDEFrame::onAbout(wxCommandEvent& event)
 {
-    wxMessageBox(wxbuildinfo(long_f), _("encIDEApp"));
+    wxMessageBox(wxVERSION_STRING, _("encIDEApp"));
 }
 
