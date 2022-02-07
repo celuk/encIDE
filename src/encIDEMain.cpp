@@ -6,6 +6,13 @@
 
 #define SCREEN_RATIO 0.9
 
+#define TEXT_EDITOR_COLOR wxColor(180, 181, 185)
+
+#define MARGIN_LINE_NUMBERS 0
+#define MARGIN_FOLD 1
+
+#define GRAY_COLOR wxColor(100, 100, 100)
+
 // File Menu Items
 const long encIDEFrame::idMenuQuit = wxNewId();
 // End of File Menu Items
@@ -15,6 +22,8 @@ const long encIDEFrame::idMenuAbout = wxNewId();
 // End of Help Menu Items
 
 const long encIDEFrame::idStatusBar = wxNewId();
+
+const long encIDEFrame::idTextEditor = wxNewId();
 
 
 BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
@@ -54,17 +63,115 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     SetMenuBar(topMenuBar);
 
-    statusBar = new wxStatusBar(this, idStatusBar, wxSTB_DEFAULT_STYLE, _("idStatusBar"));
+    // Status Bar
+    statusBar = new wxStatusBar(this, idStatusBar, wxSTB_DEFAULT_STYLE, _("StatusBar"));
     int __wxStatusBarWidths_1[1] = { -1 };
     int __wxStatusBarStyles_1[1] = { wxSB_NORMAL };
     statusBar->SetFieldsCount(1, __wxStatusBarWidths_1);
     statusBar->SetStatusStyles(1, __wxStatusBarStyles_1);
     SetStatusBar(statusBar);
+    // End of StatusBar
+
+    // C++ Text Editor
+    textEditor = new wxStyledTextCtrl(this, idTextEditor, wxDefaultPosition, wxDefaultSize, 0, "TextEditor");
+    setTextEditorStyle();
 }
 
 encIDEFrame::~encIDEFrame()
 {
     this->Destroy();
+}
+
+void encIDEFrame::setTextEditorStyle(){
+    textEditor->StyleSetBackground(wxSTC_STYLE_DEFAULT, TEXT_EDITOR_COLOR);
+
+    // To not erase background color while writing
+    textEditor->StyleClearAll();
+
+    textEditor->SetLexer(wxSTC_LEX_CPP);
+
+    // Set lines
+    textEditor->SetMarginWidth(MARGIN_LINE_NUMBERS, 50);
+    textEditor->StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColor(75, 75, 75));
+    textEditor->StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColor(220, 220, 220));
+    textEditor->SetMarginType(MARGIN_LINE_NUMBERS, wxSTC_MARGIN_NUMBER);
+
+    // Enable code folding
+    textEditor->SetMarginType(MARGIN_FOLD, wxSTC_MARGIN_SYMBOL);
+    textEditor->SetMarginWidth(MARGIN_FOLD, 1);
+    textEditor->SetMarginMask(MARGIN_FOLD, wxSTC_MASK_FOLDERS);
+    textEditor->StyleSetBackground(MARGIN_FOLD, wxColor(200, 200, 200));
+    textEditor->SetMarginSensitive(MARGIN_FOLD, true);
+
+    // Set scintilla properties
+    textEditor->SetProperty(wxT("fold"), wxT("1"));
+    textEditor->SetProperty(wxT("fold.comment"), wxT("1"));
+    textEditor->SetProperty(wxT("fold.compact"), wxT("1"));
+
+    // Set markers
+    // Folder marker
+    textEditor->MarkerDefine(wxSTC_MARKNUM_FOLDER, wxSTC_MARK_ARROW);
+    textEditor->MarkerSetForeground(wxSTC_MARKNUM_FOLDER, GRAY_COLOR);
+    textEditor->MarkerSetBackground(wxSTC_MARKNUM_FOLDER, GRAY_COLOR);
+
+    // Folder open marker
+    textEditor->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN, wxSTC_MARK_ARROWDOWN);
+    textEditor->MarkerSetForeground(wxSTC_MARKNUM_FOLDEROPEN, GRAY_COLOR);
+    textEditor->MarkerSetBackground(wxSTC_MARKNUM_FOLDEROPEN, GRAY_COLOR);
+
+    // Folder sub marker
+    textEditor->MarkerDefine(wxSTC_MARKNUM_FOLDERSUB, wxSTC_MARK_EMPTY);
+    textEditor->MarkerSetForeground(wxSTC_MARKNUM_FOLDERSUB, GRAY_COLOR);
+    textEditor->MarkerSetBackground(wxSTC_MARKNUM_FOLDERSUB, GRAY_COLOR);
+
+    // Folder end marker
+    textEditor->MarkerDefine(wxSTC_MARKNUM_FOLDEREND, wxSTC_MARK_ARROW);
+    textEditor->MarkerSetForeground(wxSTC_MARKNUM_FOLDEREND, GRAY_COLOR);
+    textEditor->MarkerSetBackground(wxSTC_MARKNUM_FOLDEREND, _("WHITE"));
+
+    // Folder open mid marker
+    textEditor->MarkerDefine(wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_ARROWDOWN);
+    textEditor->MarkerSetForeground(wxSTC_MARKNUM_FOLDEROPENMID, GRAY_COLOR);
+    textEditor->MarkerSetBackground(wxSTC_MARKNUM_FOLDEROPENMID, _("WHITE"));
+
+    // Folder mid tail marker
+    textEditor->MarkerDefine(wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_EMPTY);
+    textEditor->MarkerSetForeground(wxSTC_MARKNUM_FOLDERMIDTAIL, GRAY_COLOR);
+    textEditor->MarkerSetBackground(wxSTC_MARKNUM_FOLDERMIDTAIL, GRAY_COLOR);
+
+    // Folder tail marker
+    textEditor->MarkerDefine(wxSTC_MARKNUM_FOLDERTAIL, wxSTC_MARK_EMPTY);
+    textEditor->MarkerSetForeground(wxSTC_MARKNUM_FOLDERTAIL, GRAY_COLOR);
+    textEditor->MarkerSetBackground(wxSTC_MARKNUM_FOLDERTAIL, GRAY_COLOR);
+
+    // Set wrap mode, other choice can be wxSCI_WRAP_NONE 
+    textEditor->SetWrapMode(wxSTC_WRAP_WORD);
+
+    // Set other style options and colors
+    textEditor->StyleSetForeground(wxSTC_C_STRING, wxColor(150, 0, 0));
+    textEditor->StyleSetForeground(wxSTC_C_PREPROCESSOR, wxColor(165, 105, 0));
+    textEditor->StyleSetForeground(wxSTC_C_IDENTIFIER, wxColor(40, 0, 60));
+    textEditor->StyleSetForeground(wxSTC_C_NUMBER, wxColor(0, 150, 0));
+    textEditor->StyleSetForeground(wxSTC_C_CHARACTER, wxColor(150, 0, 0));
+
+    textEditor->StyleSetForeground(wxSTC_C_WORD, wxColor(0, 0, 150));
+    textEditor->StyleSetForeground(wxSTC_C_WORD2, wxColor(0, 150, 0));
+
+    textEditor->StyleSetForeground(wxSTC_C_COMMENT, wxColor(150, 150, 150));
+    textEditor->StyleSetForeground(wxSTC_C_COMMENTLINE, wxColor(150, 150, 150));
+    textEditor->StyleSetForeground(wxSTC_C_COMMENTDOC, wxColor(150, 150, 150));
+
+    textEditor->StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORD, wxColor(0, 0, 200));
+    textEditor->StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORDERROR, wxColor(0, 0, 200));
+
+    textEditor->StyleSetBold(wxSTC_C_WORD, true);
+    textEditor->StyleSetBold(wxSTC_C_WORD2, true);
+    textEditor->StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
+
+    // TODO add more c++ keyword
+    // c++ keywords
+    textEditor->SetKeyWords(0, wxT("return for while break continue class public: private: protected:"));
+    textEditor->SetKeyWords(1, wxT("const void int float char double"));
 }
 
 void encIDEFrame::onQuit(wxCommandEvent& event)
@@ -74,6 +181,6 @@ void encIDEFrame::onQuit(wxCommandEvent& event)
 
 void encIDEFrame::onAbout(wxCommandEvent& event)
 {
-    wxMessageBox(wxVERSION_STRING, _("encIDEApp"));
+    wxMessageBox(wxVERSION_STRING, _("encIDE"));
 }
 

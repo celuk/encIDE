@@ -4,6 +4,7 @@
 #include <wx/menu.h>
 #include <wx/frame.h>
 #include <wx/statusbr.h>
+#include <wx/stc/stc.h>
 
 class encIDEFrame: public wxFrame
 {
@@ -32,6 +33,11 @@ class encIDEFrame: public wxFrame
 
         wxStatusBar* statusBar;
         static const long idStatusBar;
+
+        wxStyledTextCtrl* textEditor;
+        static const long idTextEditor;
+
+        void setTextEditorStyle();
 
         void onQuit(wxCommandEvent& event);
         void onAbout(wxCommandEvent& event);
