@@ -1,0 +1,5 @@
+/Users/shc/wx/encIDE/build/CMakeFiles/edit_cache.dir
+/Users/shc/wx/encIDE/build/CMakeFiles/rebuild_cache.dir
+/Users/shc/wx/encIDE/build/src/CMakeFiles/encIDE.dir
+/Users/shc/wx/encIDE/build/src/CMakeFiles/edit_cache.dir
+/Users/shc/wx/encIDE/build/src/CMakeFiles/rebuild_cache.dir
