@@ -50,6 +50,11 @@ class encIDEFrame: public wxFrame
         wxStyledTextCtrl* textEditor;
         static const long idTextEditor;
 
+        wxString filePath;
+        wxString compilerPath;
+        wxString riscvRootPath;
+        wxString riscvTargetOption;
+
         void setTextEditorStyle();
 
         void onOpenFile(wxCommandEvent& event);
@@ -61,6 +66,8 @@ class encIDEFrame: public wxFrame
         void onAbout(wxCommandEvent& event);
 
         void onClose(wxCloseEvent& event);
+
+        void readAndSetConfig();
 
         DECLARE_EVENT_TABLE()
 };

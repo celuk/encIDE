@@ -16,6 +16,7 @@
 #define MARGIN_LINE_NUMBERS 0
 #define MARGIN_FOLD 1
 
+#define CONFIG_FILE "encide.config"
 
 // File Menu Items
 const long encIDEFrame::idMenuOpenFile = wxNewId();
@@ -110,6 +111,13 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     // C++ Text Editor
     textEditor = new wxStyledTextCtrl(this, idTextEditor, wxDefaultPosition, wxDefaultSize, 0, "TextEditor");
     setTextEditorStyle();
+
+    // Set strings
+    filePath = "";
+    compilerPath = "";
+    riscvRootPath = "";
+    riscvTargetOption = "";
+    readAndSetConfig();
 }
 
 encIDEFrame::~encIDEFrame()
@@ -251,5 +259,28 @@ void encIDEFrame::onZoomOut(wxCommandEvent& event)
 void encIDEFrame::onAbout(wxCommandEvent& event)
 {
     wxMessageBox(wxVERSION_STRING, _("encIDE"));
+}
+
+// Helper function
+wxString getSubStrAfter(wxString str, wxString delimiter){
+    return str.substr(str.find(delimiter) + 1);
+}
+
+void encIDEFrame::readAndSetConfig()
+{
+    wxTextFile configFile;
+    configFile.Open(CONFIG_FILE);
+    
+    // TODO Fix corresponding strings
+    if(configFile.IsOpened()){
+        // first line is compiler path
+        compilerPath = getSubStrAfter(configFile.GetFirstLine(), "=");
+
+        // second line is riscv root path
+        riscvRootPath = getSubStrAfter(configFile.GetNextLine(), "=");
+
+        // third line is riscv target option
+        riscvTargetOption = getSubStrAfter(configFile.GetNextLine(), "=");
+    }
 }
 
