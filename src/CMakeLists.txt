@@ -25,6 +25,7 @@ set(CONFIGSTR ${CONFIG})
 
 unset(CONFIG CACHE)
 
+# TODO Fix corresponding strings
 if("${CONFIGSTR}" STREQUAL "")
     file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
     "compilerpath=/usr/bin/clang\n"
