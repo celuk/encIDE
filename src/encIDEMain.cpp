@@ -7,6 +7,7 @@
 
 #include <wx/filedlg.h>
 #include <wx/textfile.h>
+#include <wx/textdlg.h>
 
 #define DEFAULT_SCREEN_RATIO 0.9
 
@@ -29,6 +30,10 @@ const long encIDEFrame::idMenuZoomIn = wxNewId();
 const long encIDEFrame::idMenuZoomOut = wxNewId();
 // End of View Menu Items
 
+// Options Menu Items
+const long encIDEFrame::idMenuCheckCompileString = wxNewId();
+// End of Options Menu Items
+
 // Help Menu Items
 const long encIDEFrame::idMenuAbout = wxNewId();
 // End of Help Menu Items
@@ -46,6 +51,8 @@ BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
     EVT_MENU(idMenuZoomIn, encIDEFrame::onZoomIn)
     EVT_MENU(idMenuZoomOut, encIDEFrame::onZoomOut)
 
+    EVT_MENU(idMenuCheckCompileString, encIDEFrame::onCheckCompileString)
+
     EVT_MENU(idMenuAbout, encIDEFrame::onAbout)
 END_EVENT_TABLE()
 
@@ -62,6 +69,11 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     riscvRootPath = "";
     riscvTargetOption = "";
     extraCompileFlags = "";
+
+    // TODO set compile string from config file
+    wxGetApp().compileString = "";
+    wxGetApp().compileOptionsString = "";
+
     readAndSetConfig();
 
     wxDisplay display(wxDisplay::GetFromWindow(this));
@@ -71,13 +83,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     this->CenterOnScreen();
 
-    wxGetApp().compileString = "";
-    wxGetApp().compileOptionsString = "";
-
     topMenuBar = new wxMenuBar();
 
     // TODO set menus within a function
-
     // File Menu
     fileMenu = new wxMenu();
     topMenuBar->Append(fileMenu, _("&File"));
@@ -109,9 +117,17 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     viewMenu->Append(zoomOutItem);
     // End of View Menu
 
+    // Options Menu
+    optionsMenu = new wxMenu();
+    topMenuBar->Append(optionsMenu, _("&Options"));
+
+    checkCompileStringItem = new wxMenuItem(optionsMenu, idMenuCheckCompileString, _("Check Compile String\tCtrl-K"), _("Check Compile String"), wxITEM_NORMAL);
+    optionsMenu->Append(checkCompileStringItem);
+    // End of Options Menu
+
     // Help Menu
     helpMenu = new wxMenu();
-    topMenuBar->Append(helpMenu, _("Help"));
+    topMenuBar->Append(helpMenu, _("&Help"));
 
     aboutItem = new wxMenuItem(helpMenu, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     helpMenu->Append(aboutItem);
@@ -294,6 +310,15 @@ void encIDEFrame::onZoomIn(wxCommandEvent& event)
 void encIDEFrame::onZoomOut(wxCommandEvent& event)
 {
     textEditor->ZoomOut();
+}
+
+void encIDEFrame::onCheckCompileString(wxCommandEvent& event)
+{
+    wxTextEntryDialog checkCompileStringDlg(this, wxEmptyString, "Check Compile String", 
+        wxGetApp().compileString, wxTE_MULTILINE | wxOK | wxCANCEL, wxDefaultPosition);
+    
+    if(checkCompileStringDlg.ShowModal() == wxID_OK)
+        wxGetApp().compileString = checkCompileStringDlg.GetValue();
 }
 
 void encIDEFrame::onAbout(wxCommandEvent& event)

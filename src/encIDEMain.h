@@ -42,6 +42,13 @@ class encIDEFrame: public wxFrame
         static const long idMenuZoomOut;
         // End of View Menu
 
+        // Options Menu
+        wxMenu* optionsMenu;
+
+        wxMenuItem* checkCompileStringItem;
+        static const long idMenuCheckCompileString;
+        // End of Options Menu
+
         // Help Menu
         wxMenu* helpMenu;
 
@@ -69,6 +76,8 @@ class encIDEFrame: public wxFrame
 
         void onZoomIn(wxCommandEvent& event);
         void onZoomOut(wxCommandEvent& event);
+
+        void onCheckCompileString(wxCommandEvent& event);
 
         void onAbout(wxCommandEvent& event);
 
