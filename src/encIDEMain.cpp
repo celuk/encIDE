@@ -32,6 +32,7 @@ const long encIDEFrame::idMenuZoomOut = wxNewId();
 // End of View Menu Items
 
 // Options Menu Items
+const long encIDEFrame::idMenuSetCompilerPath = wxNewId();
 const long encIDEFrame::idMenuCheckCompileString = wxNewId();
 // End of Options Menu Items
 
@@ -53,6 +54,7 @@ BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
     EVT_MENU(idMenuZoomIn, encIDEFrame::onZoomIn)
     EVT_MENU(idMenuZoomOut, encIDEFrame::onZoomOut)
 
+    EVT_MENU(idMenuSetCompilerPath, encIDEFrame::onSetCompilerPath)
     EVT_MENU(idMenuCheckCompileString, encIDEFrame::onCheckCompileString)
 
     EVT_MENU(idMenuAbout, encIDEFrame::onAbout)
@@ -125,6 +127,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     // Options Menu
     optionsMenu = new wxMenu();
     topMenuBar->Append(optionsMenu, _("&Options"));
+
+    setCompilerPathItem = new wxMenuItem(optionsMenu, idMenuSetCompilerPath, _("Set Compiler Path\tCtrl-P"), _("Set Compiler Path"), wxITEM_NORMAL);
+    optionsMenu->Append(setCompilerPathItem);
 
     checkCompileStringItem = new wxMenuItem(optionsMenu, idMenuCheckCompileString, _("Check Compile String\tCtrl-K"), _("Check Compile String"), wxITEM_NORMAL);
     optionsMenu->Append(checkCompileStringItem);
@@ -320,6 +325,15 @@ void encIDEFrame::onZoomIn(wxCommandEvent& event)
 void encIDEFrame::onZoomOut(wxCommandEvent& event)
 {
     textEditor->ZoomOut();
+}
+
+void encIDEFrame::onSetCompilerPath(wxCommandEvent& event)
+{
+    wxTextEntryDialog setCompilerPathDlg(this, wxEmptyString, "Set Compiler Path", 
+        wxEmptyString /*TODO add compiler path from config file*/, wxOK | wxCANCEL, wxDefaultPosition);
+    
+    if(setCompilerPathDlg.ShowModal() == wxID_OK)
+        compilerPath = setCompilerPathDlg.GetValue();
 }
 
 void encIDEFrame::onCheckCompileString(wxCommandEvent& event)
