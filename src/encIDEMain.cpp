@@ -7,15 +7,20 @@
 #define SCREEN_RATIO 0.9
 
 #define TEXT_EDITOR_COLOR wxColor(180, 181, 185)
+#define GRAY_COLOR wxColor(100, 100, 100)
 
 #define MARGIN_LINE_NUMBERS 0
 #define MARGIN_FOLD 1
 
-#define GRAY_COLOR wxColor(100, 100, 100)
 
 // File Menu Items
 const long encIDEFrame::idMenuQuit = wxNewId();
 // End of File Menu Items
+
+// View Menu Items
+const long encIDEFrame::idMenuZoomIn = wxNewId();
+const long encIDEFrame::idMenuZoomOut = wxNewId();
+// End of View Menu Items
 
 // Help Menu Items
 const long encIDEFrame::idMenuAbout = wxNewId();
@@ -28,6 +33,10 @@ const long encIDEFrame::idTextEditor = wxNewId();
 
 BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
     EVT_MENU(idMenuQuit, encIDEFrame::onQuit)
+
+    EVT_MENU(idMenuZoomIn, encIDEFrame::onZoomIn)
+    EVT_MENU(idMenuZoomOut, encIDEFrame::onZoomOut)
+
     EVT_MENU(idMenuAbout, encIDEFrame::onAbout)
 END_EVENT_TABLE()
 
@@ -52,6 +61,23 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     quitItem = new wxMenuItem(fileMenu, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     fileMenu->Append(quitItem);
     // End of File Menu
+
+    // View Menu
+    viewMenu = new wxMenu();
+    topMenuBar->Append(viewMenu, _("&View"));
+
+    zoomInItem = new wxMenuItem(viewMenu, idMenuZoomIn, _("Zoom In\tCtrl-+"), _("Zoom In"), wxITEM_NORMAL);
+    zoomOutItem = new wxMenuItem(viewMenu, idMenuZoomOut, _("Zoom Out\tCtrl--"), _("Zoom Out"), wxITEM_NORMAL);
+
+    // On macos set zoom key to 'option' or 'alt'
+    #ifdef __APPLE__
+        zoomInItem->SetItemLabel(_("Zoom In\tAlt-+")); // Can be used with 'option' + 'shift' + '+'
+        zoomOutItem->SetItemLabel(_("Zoom Out\tAlt--")); // Can be used with 'option' + '-'
+    #endif
+
+    viewMenu->Append(zoomInItem);
+    viewMenu->Append(zoomOutItem);
+    // End of View Menu
 
     // Help Menu
     helpMenu = new wxMenu();
@@ -170,13 +196,23 @@ void encIDEFrame::setTextEditorStyle(){
 
     // TODO add more c++ keyword
     // c++ keywords
-    textEditor->SetKeyWords(0, wxT("return for while break continue class public: private: protected:"));
+    textEditor->SetKeyWords(0, wxT("return for while break continue class public private protected"));
     textEditor->SetKeyWords(1, wxT("const void int float char double"));
 }
 
 void encIDEFrame::onQuit(wxCommandEvent& event)
 {
     Close();
+}
+
+void encIDEFrame::onZoomIn(wxCommandEvent& event)
+{
+    textEditor->ZoomIn();
+}
+
+void encIDEFrame::onZoomOut(wxCommandEvent& event)
+{
+    textEditor->ZoomOut();
 }
 
 void encIDEFrame::onAbout(wxCommandEvent& event)

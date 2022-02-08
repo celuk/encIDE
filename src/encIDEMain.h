@@ -24,6 +24,16 @@ class encIDEFrame: public wxFrame
         static const long idMenuQuit;
         // End of File Menu
 
+        // View Menu
+        wxMenu* viewMenu;
+
+        wxMenuItem* zoomInItem;
+        static const long idMenuZoomIn;
+
+        wxMenuItem* zoomOutItem;
+        static const long idMenuZoomOut;
+        // End of View Menu
+
         // Help Menu
         wxMenu* helpMenu;
 
@@ -40,7 +50,12 @@ class encIDEFrame: public wxFrame
         void setTextEditorStyle();
 
         void onQuit(wxCommandEvent& event);
+
+        void onZoomIn(wxCommandEvent& event);
+        void onZoomOut(wxCommandEvent& event);
+
         void onAbout(wxCommandEvent& event);
+
         void onClose(wxCloseEvent& event);
 
         DECLARE_EVENT_TABLE()
