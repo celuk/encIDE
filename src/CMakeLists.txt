@@ -29,7 +29,9 @@ unset(CONFIG CACHE)
 if("${CONFIGSTR}" STREQUAL "")
     file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
     "compilerpath=/usr/bin/clang\n"
-    "filepath=/Users/shc/wx/encIDE/CMakeLists.txt\n"
+    "riscvrootpath=/Users/shc/wx/encIDE/CMakeLists.txt\n"
+    "riscvtargetoption=--riscv32\n"
+    "screenratio=0.8\n"
     )
 else()
     file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config ${CONFIGSTR})

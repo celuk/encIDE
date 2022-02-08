@@ -15,6 +15,8 @@ class encIDEFrame: public wxFrame
 
     private:
 
+        double screenRatio;
+
         wxMenuBar* topMenuBar;
 
         // File Menu
@@ -57,6 +59,7 @@ class encIDEFrame: public wxFrame
         wxString compilerPath;
         wxString riscvRootPath;
         wxString riscvTargetOption;
+        wxString extraCompileFlags;
 
         void setTextEditorStyle();
 

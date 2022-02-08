@@ -8,7 +8,7 @@
 #include <wx/filedlg.h>
 #include <wx/textfile.h>
 
-#define SCREEN_RATIO 0.9
+#define DEFAULT_SCREEN_RATIO 0.9
 
 #define TEXT_EDITOR_COLOR wxColor(180, 181, 185)
 #define GRAY_COLOR wxColor(100, 100, 100)
@@ -54,10 +54,20 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 {
     Create(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _("wxID_ANY"));
 
+    screenRatio = DEFAULT_SCREEN_RATIO;
+
+    // Set strings
+    filePath = "";
+    compilerPath = "";
+    riscvRootPath = "";
+    riscvTargetOption = "";
+    extraCompileFlags = "";
+    readAndSetConfig();
+
     wxDisplay display(wxDisplay::GetFromWindow(this));
     wxRect activeScreenRect = display.GetClientArea();
 
-    this->SetClientSize(wxSize(SCREEN_RATIO * activeScreenRect.GetWidth(), SCREEN_RATIO * activeScreenRect.GetHeight()));
+    this->SetClientSize(wxSize(screenRatio * activeScreenRect.GetWidth(), screenRatio * activeScreenRect.GetHeight()));
 
     this->CenterOnScreen();
 
@@ -121,13 +131,6 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     // C++ Text Editor
     textEditor = new wxStyledTextCtrl(this, idTextEditor, wxDefaultPosition, wxDefaultSize, 0, "TextEditor");
     setTextEditorStyle();
-
-    // Set strings
-    filePath = "";
-    compilerPath = "";
-    riscvRootPath = "";
-    riscvTargetOption = "";
-    readAndSetConfig();
 }
 
 encIDEFrame::~encIDEFrame()
@@ -318,6 +321,12 @@ void encIDEFrame::readAndSetConfig()
 
         // third line is riscv target option
         riscvTargetOption = getSubStrAfter(configFile.GetNextLine(), "=");
+
+        // fourth line is extra compile flags
+        extraCompileFlags = getSubStrAfter(configFile.GetNextLine(), "=");
+
+        // fifth line is screen ratio
+        getSubStrAfter(configFile.GetNextLine(), "=").ToDouble(&screenRatio);
     }
 }
 
