@@ -2,7 +2,11 @@
 #include "encIDEMain.h"
 
 #include <wx/display.h>
+
 #include <wx/msgdlg.h>
+
+#include <wx/filedlg.h>
+#include <wx/textfile.h>
 
 #define SCREEN_RATIO 0.9
 
@@ -14,6 +18,7 @@
 
 
 // File Menu Items
+const long encIDEFrame::idMenuOpenFile = wxNewId();
 const long encIDEFrame::idMenuQuit = wxNewId();
 // End of File Menu Items
 
@@ -32,6 +37,7 @@ const long encIDEFrame::idTextEditor = wxNewId();
 
 
 BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
+    EVT_MENU(idMenuOpenFile, encIDEFrame::onOpenFile)
     EVT_MENU(idMenuQuit, encIDEFrame::onQuit)
 
     EVT_MENU(idMenuZoomIn, encIDEFrame::onZoomIn)
@@ -57,6 +63,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     // File Menu
     fileMenu = new wxMenu();
     topMenuBar->Append(fileMenu, _("&File"));
+
+    openFileItem = new wxMenuItem(fileMenu, idMenuOpenFile, _("Open File\tCtrl-O"), _("Open an existing file"), wxITEM_NORMAL);
+    fileMenu->Append(openFileItem);
 
     quitItem = new wxMenuItem(fileMenu, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     fileMenu->Append(quitItem);
@@ -198,6 +207,30 @@ void encIDEFrame::setTextEditorStyle(){
     // c++ keywords
     textEditor->SetKeyWords(0, wxT("return for while break continue class public private protected"));
     textEditor->SetKeyWords(1, wxT("const void int float char double"));
+}
+
+void encIDEFrame::onOpenFile(wxCommandEvent& event)
+{
+    wxFileDialog openFileDlg(this, "Open file...", wxEmptyString, wxEmptyString, "All files (*.*)|*.*", wxFD_OPEN);
+
+    if(openFileDlg.ShowModal() == wxID_OK){
+        wxTextFile textFile;
+        textFile.Open(openFileDlg.GetPath());
+
+        if(textFile.IsOpened()){
+            textEditor->ClearAll();
+
+            textEditor->AddText(textFile.GetFirstLine());
+            textEditor->AddText("\r\n");
+            while(!textFile.Eof()){
+                textEditor->AddText(textFile.GetNextLine());
+                textEditor->AddText("\r\n");
+            }
+
+            textFile.Close();
+        }
+        else wxMessageBox("File cannot be opened!");
+    }
 }
 
 void encIDEFrame::onQuit(wxCommandEvent& event)
