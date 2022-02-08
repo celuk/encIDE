@@ -20,6 +20,7 @@
 
 // File Menu Items
 const long encIDEFrame::idMenuOpenFile = wxNewId();
+const long encIDEFrame::idMenuSaveFile = wxNewId();
 const long encIDEFrame::idMenuQuit = wxNewId();
 // End of File Menu Items
 
@@ -39,6 +40,7 @@ const long encIDEFrame::idTextEditor = wxNewId();
 
 BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
     EVT_MENU(idMenuOpenFile, encIDEFrame::onOpenFile)
+    EVT_MENU(idMenuSaveFile, encIDEFrame::onSaveFile)
     EVT_MENU(idMenuQuit, encIDEFrame::onQuit)
 
     EVT_MENU(idMenuZoomIn, encIDEFrame::onZoomIn)
@@ -61,12 +63,17 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     topMenuBar = new wxMenuBar();
 
+    // TODO set menus within a function
+
     // File Menu
     fileMenu = new wxMenu();
     topMenuBar->Append(fileMenu, _("&File"));
 
     openFileItem = new wxMenuItem(fileMenu, idMenuOpenFile, _("Open File\tCtrl-O"), _("Open an existing file"), wxITEM_NORMAL);
     fileMenu->Append(openFileItem);
+
+    saveFileItem = new wxMenuItem(fileMenu, idMenuSaveFile, _("Save File\tCtrl-S"), _("Save an existing or new file"), wxITEM_NORMAL);
+    fileMenu->Append(saveFileItem);
 
     quitItem = new wxMenuItem(fileMenu, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     fileMenu->Append(quitItem);
@@ -222,22 +229,47 @@ void encIDEFrame::onOpenFile(wxCommandEvent& event)
     wxFileDialog openFileDlg(this, "Open file...", wxEmptyString, wxEmptyString, "All files (*.*)|*.*", wxFD_OPEN);
 
     if(openFileDlg.ShowModal() == wxID_OK){
-        wxTextFile textFile;
-        textFile.Open(openFileDlg.GetPath());
+        wxTextFile openTextFile;
+        openTextFile.Open(openFileDlg.GetPath());
 
-        if(textFile.IsOpened()){
+        if(openTextFile.IsOpened()){
+            filePath = openFileDlg.GetPath();
+
             textEditor->ClearAll();
 
-            textEditor->AddText(textFile.GetFirstLine());
+            textEditor->AddText(openTextFile.GetFirstLine());
             textEditor->AddText("\r\n");
-            while(!textFile.Eof()){
-                textEditor->AddText(textFile.GetNextLine());
+            while(!openTextFile.Eof()){
+                textEditor->AddText(openTextFile.GetNextLine());
                 textEditor->AddText("\r\n");
             }
 
-            textFile.Close();
+            statusBar->PushStatusText(filePath);
+
+            openTextFile.Close();
         }
         else wxMessageBox("File cannot be opened!");
+    }
+}
+
+// TODO Add new file support and distinguish between saving new file and saving existing file
+void encIDEFrame::onSaveFile(wxCommandEvent& event)
+{
+    wxFileDialog saveFileDlg(this, "Save file...", wxEmptyString, wxEmptyString, "All files (*.*)|*.*", wxFD_SAVE);
+
+    if(saveFileDlg.ShowModal() == wxID_OK){
+        wxFile saveTextFile(saveFileDlg.GetPath(), wxFile::write);
+
+        if(saveTextFile.IsOpened()){
+            filePath = saveFileDlg.GetPath();
+
+            textEditor->SaveFile(filePath);
+
+            statusBar->PushStatusText(filePath);
+
+            saveTextFile.Close();
+        }
+        else wxMessageBox("File cannot be created!");
     }
 }
 
@@ -270,7 +302,7 @@ void encIDEFrame::readAndSetConfig()
 {
     wxTextFile configFile;
     configFile.Open(CONFIG_FILE);
-    
+
     // TODO Fix corresponding strings
     if(configFile.IsOpened()){
         // first line is compiler path

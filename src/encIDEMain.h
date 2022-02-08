@@ -23,6 +23,9 @@ class encIDEFrame: public wxFrame
         wxMenuItem* openFileItem;
         static const long idMenuOpenFile;
 
+        wxMenuItem* saveFileItem;
+        static const long idMenuSaveFile;
+
         wxMenuItem* quitItem;
         static const long idMenuQuit;
         // End of File Menu
@@ -58,6 +61,7 @@ class encIDEFrame: public wxFrame
         void setTextEditorStyle();
 
         void onOpenFile(wxCommandEvent& event);
+        void onSaveFile(wxCommandEvent& event);
         void onQuit(wxCommandEvent& event);
 
         void onZoomIn(wxCommandEvent& event);
