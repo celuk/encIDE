@@ -22,6 +22,7 @@
 // File Menu Items
 const long encIDEFrame::idMenuOpenFile = wxNewId();
 const long encIDEFrame::idMenuSaveFile = wxNewId();
+const long encIDEFrame::idMenuCompileFile = wxNewId();
 const long encIDEFrame::idMenuQuit = wxNewId();
 // End of File Menu Items
 
@@ -46,6 +47,7 @@ const long encIDEFrame::idTextEditor = wxNewId();
 BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
     EVT_MENU(idMenuOpenFile, encIDEFrame::onOpenFile)
     EVT_MENU(idMenuSaveFile, encIDEFrame::onSaveFile)
+    EVT_MENU(idMenuCompileFile, encIDEFrame::onCompileFile)
     EVT_MENU(idMenuQuit, encIDEFrame::onQuit)
 
     EVT_MENU(idMenuZoomIn, encIDEFrame::onZoomIn)
@@ -95,6 +97,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     saveFileItem = new wxMenuItem(fileMenu, idMenuSaveFile, _("Save File\tCtrl-S"), _("Save an existing or new file"), wxITEM_NORMAL);
     fileMenu->Append(saveFileItem);
+
+    compileFileItem = new wxMenuItem(fileMenu, idMenuCompileFile, _("Compile File\tCtrl-B"), _("Execute compile string to compile existing file"), wxITEM_NORMAL);
+    fileMenu->Append(compileFileItem);
 
     quitItem = new wxMenuItem(fileMenu, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     fileMenu->Append(quitItem);
@@ -295,6 +300,11 @@ void encIDEFrame::onSaveFile(wxCommandEvent& event)
         }
         else wxMessageBox("File cannot be created!");
     }
+}
+
+void encIDEFrame::onCompileFile(wxCommandEvent& event)
+{
+    // TODO open command prompt and execute command
 }
 
 void encIDEFrame::onQuit(wxCommandEvent& event)

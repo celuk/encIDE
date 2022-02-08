@@ -28,6 +28,9 @@ class encIDEFrame: public wxFrame
         wxMenuItem* saveFileItem;
         static const long idMenuSaveFile;
 
+        wxMenuItem* compileFileItem;
+        static const long idMenuCompileFile;
+
         wxMenuItem* quitItem;
         static const long idMenuQuit;
         // End of File Menu
@@ -72,6 +75,7 @@ class encIDEFrame: public wxFrame
 
         void onOpenFile(wxCommandEvent& event);
         void onSaveFile(wxCommandEvent& event);
+        void onCompileFile(wxCommandEvent& event);
         void onQuit(wxCommandEvent& event);
 
         void onZoomIn(wxCommandEvent& event);
