@@ -87,7 +87,7 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     zoomOutItem = new wxMenuItem(viewMenu, idMenuZoomOut, _("Zoom Out\tCtrl--"), _("Zoom Out"), wxITEM_NORMAL);
 
     // On macos set zoom key to 'option' or 'alt'
-    #ifdef __APPLE__
+    #if defined(__APPLE__)
         zoomInItem->SetItemLabel(_("Zoom In\tAlt-+")); // Can be used with 'option' + 'shift' + '+'
         zoomOutItem->SetItemLabel(_("Zoom Out\tAlt--")); // Can be used with 'option' + '-'
     #endif
@@ -258,7 +258,9 @@ void encIDEFrame::onSaveFile(wxCommandEvent& event)
     wxFileDialog saveFileDlg(this, "Save file...", wxEmptyString, wxEmptyString, "All files (*.*)|*.*", wxFD_SAVE);
 
     if(saveFileDlg.ShowModal() == wxID_OK){
-        wxFile saveTextFile(saveFileDlg.GetPath(), wxFile::write);
+        wxTextFile saveTextFile;
+        saveTextFile.Create(saveFileDlg.GetPath());
+        saveTextFile.Open(saveFileDlg.GetPath());
 
         if(saveTextFile.IsOpened()){
             filePath = saveFileDlg.GetPath();
@@ -275,7 +277,7 @@ void encIDEFrame::onSaveFile(wxCommandEvent& event)
 
 void encIDEFrame::onQuit(wxCommandEvent& event)
 {
-    Close();
+    this->Close();
 }
 
 void encIDEFrame::onZoomIn(wxCommandEvent& event)
