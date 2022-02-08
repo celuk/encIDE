@@ -61,6 +61,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     this->CenterOnScreen();
 
+    wxGetApp().compileString = "";
+    wxGetApp().compileOptionsString = "";
+
     topMenuBar = new wxMenuBar();
 
     // TODO set menus within a function

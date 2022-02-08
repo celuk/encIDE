@@ -7,6 +7,10 @@ class encIDEApp : public wxApp
 {
     public:
         virtual bool OnInit();
+
+        // Global string variables which are reachable within wxGetApp().stringName
+        wxString compileString;
+        wxString compileOptionsString;
 };
 
 DECLARE_APP(encIDEApp);
