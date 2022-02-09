@@ -69,15 +69,23 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 {
     Create(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _("wxID_ANY"));
 
-    screenRatio = DEFAULT_SCREEN_RATIO;
-
-    // Set strings
+    // Set variables
     filePath = "";
     compilerPath = "";
     riscvRootPath = "";
     riscvTargetOption = "";
     extraCompileFlags = "";
     lastOpenedFile = "";
+    
+    screenRatio = DEFAULT_SCREEN_RATIO;
+
+    windowWidth = -1;
+    windowHeight = -1;
+
+    windowPositionX = -1;
+    windowPositionY = -1;
+
+    zoomLevel = -1;
 
     // TODO set compile string from config file
     wxGetApp().compileString = "";
@@ -88,9 +96,12 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     wxDisplay display(wxDisplay::GetFromWindow(this));
     wxRect activeScreenRect = display.GetClientArea();
 
-    this->SetClientSize(wxSize(screenRatio * activeScreenRect.GetWidth(), screenRatio * activeScreenRect.GetHeight()));
+    this->SetClientSize(windowWidth == -1 ? wxSize(screenRatio * activeScreenRect.GetWidth(), screenRatio * activeScreenRect.GetHeight()) : wxSize(windowWidth, windowHeight));
 
-    this->CenterOnScreen();
+    if(windowPositionX == -1)
+        this->CenterOnScreen();
+    else
+        this->SetPosition(wxPoint(windowPositionX, windowPositionY));
 
     topMenuBar = new wxMenuBar();
 
@@ -197,6 +208,20 @@ encIDEFrame::~encIDEFrame()
     if(filePath != wxEmptyString)
         lastOpenedFile = filePath;
     
+    windowWidth = this->GetSize().GetWidth();
+
+    // this->GetSize().GetHeight() returns height including statusbar
+    // However SetClientSize does not include statusbar height
+    // Because statusbar added after setting client size
+    // That's why statusbar height should be subtracted
+    windowHeight = this->GetSize().GetHeight() - statusBar->GetSize().GetHeight();
+
+    // Top left x-y coordinates
+    windowPositionX = this->GetPosition().x;
+    windowPositionY = this->GetPosition().y;
+
+    zoomLevel = textEditor->GetZoom();
+
     resetConfigs();
 
     this->Destroy();
@@ -292,6 +317,9 @@ void encIDEFrame::setTextEditorStyle(){
     // c++ keywords
     textEditor->SetKeyWords(0, wxT("return for while break continue class public private protected"));
     textEditor->SetKeyWords(1, wxT("const void int float char double"));
+
+    if(zoomLevel != -1)
+        textEditor->SetZoom(zoomLevel);
 }
 
 void encIDEFrame::onOpenFile(wxCommandEvent& event)
@@ -326,7 +354,7 @@ void encIDEFrame::onOpenFile(wxCommandEvent& event)
 void encIDEFrame::onSaveFile(wxCommandEvent& event)
 {
     // Save existing file with same name
-    wxFileDialog saveFileDlg(this, "Save file...", wxEmptyString, filePath == wxEmptyString ? _(wxEmptyString):filePath.substr(filePath.rfind('/')).erase(0, 1), "All files (*.*)|*.*", wxFD_SAVE);
+    wxFileDialog saveFileDlg(this, "Save file...", wxEmptyString, (filePath == wxEmptyString) ? _(wxEmptyString):filePath.substr(filePath.rfind('/')).erase(0, 1), "All files (*.*)|*.*", wxFD_SAVE);
 
     if(saveFileDlg.ShowModal() == wxID_OK){
         wxTextFile saveTextFile;
@@ -442,11 +470,36 @@ void encIDEFrame::readConfigs()
         // fourth line is extra compile flags
         extraCompileFlags = getSubStrAfter(configFile.GetNextLine(), "=");
 
-        // fifth line is screen ratio
+        // fifth line is last opened file
+        lastOpenedFile = getSubStrAfter(configFile.GetNextLine(), "=");
+
+        // sixth line is screen ratio
         getSubStrAfter(configFile.GetNextLine(), "=").ToDouble(&screenRatio);
 
-        // sixth line is last opened file
-        lastOpenedFile = getSubStrAfter(configFile.GetNextLine(), "=");
+        // seventh line is window width
+        wxString wdW = getSubStrAfter(configFile.GetNextLine(), "=");
+        if(wdW != wxEmptyString)
+            wdW.ToLong(&windowWidth);
+        
+        // eighth line is window height
+        wxString wdH = getSubStrAfter(configFile.GetNextLine(), "=");
+        if(wdH != wxEmptyString)
+            wdH.ToLong(&windowHeight);
+
+        // ninth line is window x position
+        wxString wdPX = getSubStrAfter(configFile.GetNextLine(), "=");
+        if(wdPX != wxEmptyString)
+            wdPX.ToLong(&windowPositionX);
+        
+        // tenth line is window y position
+        wxString wdPY = getSubStrAfter(configFile.GetNextLine(), "=");
+        if(wdPY != wxEmptyString)
+            wdPY.ToLong(&windowPositionY);
+
+        // eleventh line is text editor zoom level
+        wxString zL = getSubStrAfter(configFile.GetNextLine(), "=");
+        if(zL != wxEmptyString)
+            zL.ToLong(&zoomLevel);
 
         configFile.Close();
     }
@@ -473,11 +526,26 @@ void encIDEFrame::resetConfigs()
         // fourth line is extra compile flags
         configFile.AddLine("extracompileflags=" + extraCompileFlags);
 
-        // fifth line is screen ratio
+        // fifth line is last opened file
+        configFile.AddLine("lastopenedfile=" + lastOpenedFile);
+
+        // sixth line is screen ratio
         configFile.AddLine("screenratio=" + wxString::Format(wxT("%lf"), screenRatio));
 
-        // sixth line is last opened file
-        configFile.AddLine("lastopenedfile=" + lastOpenedFile);
+        // seventh line is window width
+        configFile.AddLine("windowwidth=" + wxString::Format(wxT("%i"), (int)windowWidth));
+        
+        // eighth line is window height
+        configFile.AddLine("windowheight=" + wxString::Format(wxT("%i"), (int)windowHeight));
+
+        // ninth line is window x position
+        configFile.AddLine("windowpositionx=" + wxString::Format(wxT("%i"), (int)windowPositionX));
+
+        // tenth line is window y position
+        configFile.AddLine("windowpositiony=" + wxString::Format(wxT("%i"), (int)windowPositionY));
+
+        // eleventh line is text editor zoom level
+        configFile.AddLine("zoomlevel=" + wxString::Format(wxT("%i"), (int)zoomLevel));
 
         // Write added lines to file
         configFile.Write();

@@ -14,8 +14,15 @@ class encIDEFrame: public wxFrame
         virtual ~encIDEFrame();
 
     private:
-
         double screenRatio;
+
+        long windowWidth;
+        long windowHeight;
+
+        long windowPositionX;
+        long windowPositionY;
+
+        long zoomLevel;
 
         wxMenuBar* topMenuBar;
 

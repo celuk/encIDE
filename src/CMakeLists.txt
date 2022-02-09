@@ -33,8 +33,13 @@ if("${CONFIGSTR}" STREQUAL "")
             "riscvrootpath=C:\\riscv\\_install\\riscv64-unknown-elf\n"
             "riscvtargetoption=--riscv32\n"
             "extracompileflags=-fnoaddrsig\n"
-            "screenratio=0.8\n"
             "lastopenedfile=\n"
+            "screenratio=0.8\n"
+            "windowwidth=\n"
+            "windowheight=\n"
+            "windowpositionx=\n"
+            "windowpositiony=\n"
+            "zoomlevel=\n"
         )
     elseif(APPLE)
         file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
@@ -42,8 +47,13 @@ if("${CONFIGSTR}" STREQUAL "")
             "riscvrootpath=/Users/shc/wx/encIDE/CMakeLists.txt\n"
             "riscvtargetoption=--riscv32\n"
             "extracompileflags=-fnoaddrsig\n"
-            "screenratio=0.8\n"
             "lastopenedfile=\n"
+            "screenratio=0.8\n"
+            "windowwidth=\n"
+            "windowheight=\n"
+            "windowpositionx=\n"
+            "windowpositiony=\n"
+            "zoomlevel=\n"
         )
     else()
         file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
@@ -51,8 +61,13 @@ if("${CONFIGSTR}" STREQUAL "")
             "riscvrootpath=/home/shc/wx/encIDE/CMakeLists.txt\n"
             "riscvtargetoption=--riscv32\n"
             "extracompileflags=-fnoaddrsig\n"
-            "screenratio=0.8\n"
             "lastopenedfile=\n"
+            "screenratio=0.8\n"
+            "windowwidth=\n"
+            "windowheight=\n"
+            "windowpositionx=\n"
+            "windowpositiony=\n"
+            "zoomlevel=\n"
         )
     endif()
 else()
