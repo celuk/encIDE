@@ -321,14 +321,14 @@ void encIDEFrame::onCompileFile(wxCommandEvent& event)
 {
     // TODO open command prompt and execute command
 
-    #if defined(_WIN32)
-        wxExecute("start cmd.exe");
-    #elif defined(__APPLE__)
-        wxExecute("open -a Terminal .");
-    #else
-        // every linux distribution has xterm?
-        wxExecute("xterm");
-    #endif
+    //#if defined(_WIN32)
+    //    wxExecute("start cmd.exe");
+    //#elif defined(__APPLE__)
+    //    wxExecute("open -a Terminal .");
+    //#else
+    //    // every linux distribution has xterm?
+    //    wxExecute("xterm");
+    //#endif
 }
 
 void encIDEFrame::onQuit(wxCommandEvent& event)
