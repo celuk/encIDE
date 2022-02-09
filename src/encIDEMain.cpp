@@ -34,6 +34,7 @@ const long encIDEFrame::idMenuZoomOut = wxNewId();
 // Options Menu Items
 const long encIDEFrame::idMenuSetCompilerPath = wxNewId();
 const long encIDEFrame::idMenuSetRiscvPath = wxNewId();
+const long encIDEFrame::idMenuSetRiscvTargetOption = wxNewId();
 const long encIDEFrame::idMenuCheckCompileString = wxNewId();
 // End of Options Menu Items
 
@@ -57,6 +58,7 @@ BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
 
     EVT_MENU(idMenuSetCompilerPath, encIDEFrame::onSetCompilerPath)
     EVT_MENU(idMenuSetRiscvPath, encIDEFrame::onSetRiscvPath)
+    EVT_MENU(idMenuSetRiscvTargetOption, encIDEFrame::onSetRiscvTargetOption)
     EVT_MENU(idMenuCheckCompileString, encIDEFrame::onCheckCompileString)
 
     EVT_MENU(idMenuAbout, encIDEFrame::onAbout)
@@ -135,6 +137,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     setRiscvPathItem = new wxMenuItem(optionsMenu, idMenuSetRiscvPath, _("Set RISCV Path\tCtrl-R"), _("Set RISCV Path"), wxITEM_NORMAL);
     optionsMenu->Append(setRiscvPathItem);
+
+    setRiscvTargetOptionItem = new wxMenuItem(optionsMenu, idMenuSetRiscvTargetOption, _("Set RISCV Target Options\tCtrl-T"), _("Set RISCV Target Options"), wxITEM_NORMAL);
+    optionsMenu->Append(setRiscvTargetOptionItem);
 
     checkCompileStringItem = new wxMenuItem(optionsMenu, idMenuCheckCompileString, _("Check Compile String\tCtrl-K"), _("Check Compile String"), wxITEM_NORMAL);
     optionsMenu->Append(checkCompileStringItem);
@@ -348,6 +353,15 @@ void encIDEFrame::onSetRiscvPath(wxCommandEvent& event)
     
     if(setRiscvPathDlg.ShowModal() == wxID_OK)
         riscvRootPath = setRiscvPathDlg.GetValue();
+}
+
+void encIDEFrame::onSetRiscvTargetOption(wxCommandEvent& event)
+{
+    wxTextEntryDialog setRiscvTargetOptionDlg(this, wxEmptyString, "Set RISCV Target Options", 
+        wxEmptyString /*TODO add riscv target options from config file*/, wxOK | wxCANCEL | wxCENTRE, wxDefaultPosition);
+    
+    if(setRiscvTargetOptionDlg.ShowModal() == wxID_OK)
+        riscvTargetOption = setRiscvTargetOptionDlg.GetValue();
 }
 
 void encIDEFrame::onCheckCompileString(wxCommandEvent& event)

@@ -53,6 +53,9 @@ class encIDEFrame: public wxFrame
 
         wxMenuItem* setRiscvPathItem;
         static const long idMenuSetRiscvPath;
+        
+        wxMenuItem* setRiscvTargetOptionItem;
+        static const long idMenuSetRiscvTargetOption;
 
         wxMenuItem* checkCompileStringItem;
         static const long idMenuCheckCompileString;
@@ -89,6 +92,7 @@ class encIDEFrame: public wxFrame
 
         void onSetCompilerPath(wxCommandEvent& event);
         void onSetRiscvPath(wxCommandEvent& event);
+        void onSetRiscvTargetOption(wxCommandEvent& event);
         void onCheckCompileString(wxCommandEvent& event);
 
         void onAbout(wxCommandEvent& event);
