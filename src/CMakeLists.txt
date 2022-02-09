@@ -27,12 +27,31 @@ unset(CONFIG CACHE)
 
 # TODO Fix corresponding strings
 if("${CONFIGSTR}" STREQUAL "")
-    file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
-    "compilerpath=/usr/bin/clang\n"
-    "riscvrootpath=/Users/shc/wx/encIDE/CMakeLists.txt\n"
-    "riscvtargetoption=--riscv32\n"
-    "screenratio=0.8\n"
-    )
+    if(WIN32)
+        file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
+            "compilerpath=C:\\LLVM\\bin\\clang.exe\n"
+            "riscvrootpath=C:\\riscv\\_install\\riscv64-unknown-elf\n"
+            "riscvtargetoption=--riscv32\n"
+            "extracompileflags=-fnoaddrsig\n"
+            "screenratio=0.8\n"
+        )
+    elseif(APPLE)
+        file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
+            "compilerpath=/usr/bin/clang\n"
+            "riscvrootpath=/Users/shc/wx/encIDE/CMakeLists.txt\n"
+            "riscvtargetoption=--riscv32\n"
+            "extracompileflags=-fnoaddrsig\n"
+            "screenratio=0.8\n"
+        )
+    else()
+        file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
+            "compilerpath=/usr/bin/clang\n"
+            "riscvrootpath=/home/shc/wx/encIDE/CMakeLists.txt\n"
+            "riscvtargetoption=--riscv32\n"
+            "extracompileflags=-fnoaddrsig\n"
+            "screenratio=0.8\n"
+        )
+    endif()
 else()
     file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config ${CONFIGSTR})
 endif()
