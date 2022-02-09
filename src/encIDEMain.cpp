@@ -77,12 +77,13 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     riscvRootPath = "";
     riscvTargetOption = "";
     extraCompileFlags = "";
+    lastOpenedFile = "";
 
     // TODO set compile string from config file
     wxGetApp().compileString = "";
     wxGetApp().compileOptionsString = "";
 
-    readAndSetConfig();
+    readConfigs();
 
     wxDisplay display(wxDisplay::GetFromWindow(this));
     wxRect activeScreenRect = display.GetClientArea();
@@ -167,10 +168,37 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     // C++ Text Editor
     textEditor = new wxStyledTextCtrl(this, idTextEditor, wxDefaultPosition, wxDefaultSize, 0, "TextEditor");
     setTextEditorStyle();
+
+    if(lastOpenedFile != wxEmptyString){
+        wxTextFile openTextFile;
+        openTextFile.Open(lastOpenedFile);
+        if(openTextFile.IsOpened()){
+            filePath = lastOpenedFile;
+
+            textEditor->ClearAll();
+
+            textEditor->AddText(openTextFile.GetFirstLine());
+            textEditor->AddText("\r\n");
+            while(!openTextFile.Eof()){
+                textEditor->AddText(openTextFile.GetNextLine());
+                textEditor->AddText("\r\n");
+            }
+
+            statusBar->PushStatusText(filePath);
+
+            openTextFile.Close();
+        }
+        else wxMessageBox("Last opened file cannot found!");
+    }
 }
 
 encIDEFrame::~encIDEFrame()
 {
+    if(filePath != wxEmptyString)
+        lastOpenedFile = filePath;
+    
+    resetConfigs();
+
     this->Destroy();
 }
 
@@ -297,7 +325,8 @@ void encIDEFrame::onOpenFile(wxCommandEvent& event)
 // TODO Add new file support and distinguish between saving new file and saving existing file
 void encIDEFrame::onSaveFile(wxCommandEvent& event)
 {
-    wxFileDialog saveFileDlg(this, "Save file...", wxEmptyString, wxEmptyString, "All files (*.*)|*.*", wxFD_SAVE);
+    // Save existing file with same name
+    wxFileDialog saveFileDlg(this, "Save file...", wxEmptyString, filePath == wxEmptyString ? _(wxEmptyString):filePath.substr(filePath.rfind('/')).erase(0, 1), "All files (*.*)|*.*", wxFD_SAVE);
 
     if(saveFileDlg.ShowModal() == wxID_OK){
         wxTextFile saveTextFile;
@@ -321,6 +350,8 @@ void encIDEFrame::onCompileFile(wxCommandEvent& event)
 {
     // TODO open command prompt and execute command
 
+    //wxExecute("osascript -e 'tell application \"Terminal\" to activate' -e 'tell application \"Terminal\" to do script \"gcc " + filePath + " ; " + filePath.erase(filePath.rfind('/')) + "/a.out" + "\"'");
+    
     //#if defined(_WIN32)
     //    wxExecute("start cmd.exe");
     //#elif defined(__APPLE__)
@@ -392,7 +423,7 @@ wxString getSubStrAfter(wxString str, wxString delimiter){
     return str.substr(str.find(delimiter) + 1);
 }
 
-void encIDEFrame::readAndSetConfig()
+void encIDEFrame::readConfigs()
 {
     wxTextFile configFile;
     configFile.Open(CONFIG_FILE);
@@ -413,6 +444,43 @@ void encIDEFrame::readAndSetConfig()
 
         // fifth line is screen ratio
         getSubStrAfter(configFile.GetNextLine(), "=").ToDouble(&screenRatio);
+
+        // sixth line is last opened file
+        lastOpenedFile = getSubStrAfter(configFile.GetNextLine(), "=");
+
+        configFile.Close();
     }
 }
 
+void encIDEFrame::resetConfigs()
+{
+    wxTextFile configFile;
+    configFile.Open(CONFIG_FILE);
+
+    // TODO Fix corresponding strings
+    if(configFile.IsOpened()){
+        configFile.Clear();
+
+        // first line is compiler path
+        configFile.AddLine("compilerpath=" + compilerPath);
+
+        // second line is riscv root path
+        configFile.AddLine("riscvrootpath=" + riscvRootPath);
+
+        // third line is riscv target option
+        configFile.AddLine("riscvtargetoption=" + riscvTargetOption);
+
+        // fourth line is extra compile flags
+        configFile.AddLine("extracompileflags=" + extraCompileFlags);
+
+        // fifth line is screen ratio
+        configFile.AddLine("screenratio=" + wxString::Format(wxT("%lf"), screenRatio));
+
+        // sixth line is last opened file
+        configFile.AddLine("lastopenedfile=" + lastOpenedFile);
+
+        // Write added lines to file
+        configFile.Write();
+        configFile.Close();
+    }
+}

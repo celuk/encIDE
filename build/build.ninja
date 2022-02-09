@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: encIDE
-# Configurations: Debug
+# Configurations: 
 # =============================================================================
 
 #############################################
@@ -20,11 +20,6 @@
 
 ninja_required_version = 1.5
 
-
-#############################################
-# Set configuration variable for custom commands.
-
-CONFIGURATION = Debug
 # =============================================================================
 # Include auxiliary files.
 
@@ -78,18 +73,18 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 build cmake_object_order_depends_target_encIDE: phony || src/CMakeFiles/encIDE.dir
 
-build src/CMakeFiles/encIDE.dir/encIDEApp.cpp.o: CXX_COMPILER__encIDE_Debug /Users/shc/wx/encIDE/src/encIDEApp.cpp || cmake_object_order_depends_target_encIDE
+build src/CMakeFiles/encIDE.dir/encIDEApp.cpp.o: CXX_COMPILER__encIDE_ /Users/shc/wx/encIDE/src/encIDEApp.cpp || cmake_object_order_depends_target_encIDE
   DEFINES = -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__
   DEP_FILE = src/CMakeFiles/encIDE.dir/encIDEApp.cpp.o.d
-  FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.2 -std=gnu++14
+  FLAGS = -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.2 -std=gnu++14
   INCLUDES = -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.1 -isystem /opt/homebrew/include/wx-3.1
   OBJECT_DIR = src/CMakeFiles/encIDE.dir
   OBJECT_FILE_DIR = src/CMakeFiles/encIDE.dir
 
-build src/CMakeFiles/encIDE.dir/encIDEMain.cpp.o: CXX_COMPILER__encIDE_Debug /Users/shc/wx/encIDE/src/encIDEMain.cpp || cmake_object_order_depends_target_encIDE
+build src/CMakeFiles/encIDE.dir/encIDEMain.cpp.o: CXX_COMPILER__encIDE_ /Users/shc/wx/encIDE/src/encIDEMain.cpp || cmake_object_order_depends_target_encIDE
   DEFINES = -DWXUSINGDLL -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__WXOSX_COCOA__ -D__WXOSX__
   DEP_FILE = src/CMakeFiles/encIDE.dir/encIDEMain.cpp.o.d
-  FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.2 -std=gnu++14
+  FLAGS = -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.2 -std=gnu++14
   INCLUDES = -isystem /opt/homebrew/lib/wx/include/osx_cocoa-unicode-3.1 -isystem /opt/homebrew/include/wx-3.1
   OBJECT_DIR = src/CMakeFiles/encIDE.dir
   OBJECT_FILE_DIR = src/CMakeFiles/encIDE.dir
@@ -102,8 +97,8 @@ build src/CMakeFiles/encIDE.dir/encIDEMain.cpp.o: CXX_COMPILER__encIDE_Debug /Us
 #############################################
 # Link the executable bin/encIDE
 
-build bin/encIDE: CXX_EXECUTABLE_LINKER__encIDE_Debug src/CMakeFiles/encIDE.dir/encIDEApp.cpp.o src/CMakeFiles/encIDE.dir/encIDEMain.cpp.o
-  FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.2
+build bin/encIDE: CXX_EXECUTABLE_LINKER__encIDE_ src/CMakeFiles/encIDE.dir/encIDEApp.cpp.o src/CMakeFiles/encIDE.dir/encIDEMain.cpp.o
+  FLAGS = -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.2
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  -L/opt/homebrew/lib  -framework IOKit  -framework Carbon  -framework Cocoa  -framework QuartzCore  -framework AudioToolbox  -framework System  -framework OpenGL  -lwx_osx_cocoau_stc-3.1  -lwx_osx_cocoau_core-3.1  -lwx_baseu-3.1
   LINK_PATH = -L/opt/homebrew/lib
   OBJECT_DIR = src/CMakeFiles/encIDE.dir

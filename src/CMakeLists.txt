@@ -34,6 +34,7 @@ if("${CONFIGSTR}" STREQUAL "")
             "riscvtargetoption=--riscv32\n"
             "extracompileflags=-fnoaddrsig\n"
             "screenratio=0.8\n"
+            "lastopenedfile=\n"
         )
     elseif(APPLE)
         file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
@@ -42,6 +43,7 @@ if("${CONFIGSTR}" STREQUAL "")
             "riscvtargetoption=--riscv32\n"
             "extracompileflags=-fnoaddrsig\n"
             "screenratio=0.8\n"
+            "lastopenedfile=\n"
         )
     else()
         file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/encide.config
@@ -50,6 +52,7 @@ if("${CONFIGSTR}" STREQUAL "")
             "riscvtargetoption=--riscv32\n"
             "extracompileflags=-fnoaddrsig\n"
             "screenratio=0.8\n"
+            "lastopenedfile=\n"
         )
     endif()
 else()

@@ -79,6 +79,7 @@ class encIDEFrame: public wxFrame
         wxString riscvRootPath;
         wxString riscvTargetOption;
         wxString extraCompileFlags;
+        wxString lastOpenedFile;
 
         void setTextEditorStyle();
 
@@ -99,7 +100,8 @@ class encIDEFrame: public wxFrame
 
         void onClose(wxCloseEvent& event);
 
-        void readAndSetConfig();
+        void readConfigs();
+        void resetConfigs();
 
         DECLARE_EVENT_TABLE()
 };
