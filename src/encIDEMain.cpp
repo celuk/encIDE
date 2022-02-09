@@ -19,6 +19,9 @@
 
 #define CONFIG_FILE "encide.config"
 
+#define WINDOW_ANIMATION_RATIO 0.03
+#define WINDOW_ANIMATION_MILLI_SECONDS 20
+
 // File Menu Items
 const long encIDEFrame::idMenuOpenFile = wxNewId();
 const long encIDEFrame::idMenuSaveFile = wxNewId();
@@ -205,25 +208,7 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
 encIDEFrame::~encIDEFrame()
 {
-    if(filePath != wxEmptyString)
-        lastOpenedFile = filePath;
-    
-    windowWidth = this->GetSize().GetWidth();
-
-    // this->GetSize().GetHeight() returns height including statusbar
-    // However SetClientSize does not include statusbar height
-    // Because statusbar added after setting client size
-    // That's why statusbar height should be subtracted
-    windowHeight = this->GetSize().GetHeight() - statusBar->GetSize().GetHeight();
-
-    // Top left x-y coordinates
-    windowPositionX = this->GetPosition().x;
-    windowPositionY = this->GetPosition().y;
-
-    zoomLevel = textEditor->GetZoom();
-
-    resetConfigs();
-
+    whileAppClosing();
     this->Destroy();
 }
 
@@ -550,5 +535,44 @@ void encIDEFrame::resetConfigs()
         // Write added lines to file
         configFile.Write();
         configFile.Close();
+    }
+}
+
+void encIDEFrame::whileAppClosing(){
+    if(filePath != wxEmptyString)
+        lastOpenedFile = filePath;
+    
+    windowWidth = this->GetSize().GetWidth();
+
+    // this->GetSize().GetHeight() returns height including statusbar
+    // However SetClientSize does not include statusbar height
+    // Because statusbar added after setting client size
+    // That's why statusbar height should be subtracted
+    // Another and maybe better solution can be using SetClientSize after adding statusbar in the constructor
+    windowHeight = this->GetSize().GetHeight() - statusBar->GetSize().GetHeight();
+
+    // Top left x-y coordinates
+    windowPositionX = this->GetPosition().x;
+    windowPositionY = this->GetPosition().y;
+
+    zoomLevel = textEditor->GetZoom();
+
+    resetConfigs();
+
+    animateWindowWhileClosing();
+}
+
+void encIDEFrame::animateWindowWhileClosing(){
+    double wW = 0;
+    double wH = 0;
+
+    for(int i=0; wW < windowWidth; i++){
+        wW += windowWidth * WINDOW_ANIMATION_RATIO * i;
+        wH += windowHeight * WINDOW_ANIMATION_RATIO * i;
+
+        SetSize(wxSize((int)(windowWidth - wW), (int)(windowHeight - wW)));
+
+        wxYield();
+        wxMilliSleep(WINDOW_ANIMATION_MILLI_SECONDS);
     }
 }

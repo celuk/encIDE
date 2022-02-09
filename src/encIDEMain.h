@@ -110,6 +110,9 @@ class encIDEFrame: public wxFrame
         void readConfigs();
         void resetConfigs();
 
+        void whileAppClosing();
+        void animateWindowWhileClosing();
+
         DECLARE_EVENT_TABLE()
 };
 
