@@ -51,6 +51,9 @@ class encIDEFrame: public wxFrame
         wxMenuItem* setCompilerPathItem;
         static const long idMenuSetCompilerPath;
 
+        wxMenuItem* setRiscvPathItem;
+        static const long idMenuSetRiscvPath;
+
         wxMenuItem* checkCompileStringItem;
         static const long idMenuCheckCompileString;
         // End of Options Menu
@@ -85,6 +88,7 @@ class encIDEFrame: public wxFrame
         void onZoomOut(wxCommandEvent& event);
 
         void onSetCompilerPath(wxCommandEvent& event);
+        void onSetRiscvPath(wxCommandEvent& event);
         void onCheckCompileString(wxCommandEvent& event);
 
         void onAbout(wxCommandEvent& event);

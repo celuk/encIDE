@@ -33,6 +33,7 @@ const long encIDEFrame::idMenuZoomOut = wxNewId();
 
 // Options Menu Items
 const long encIDEFrame::idMenuSetCompilerPath = wxNewId();
+const long encIDEFrame::idMenuSetRiscvPath = wxNewId();
 const long encIDEFrame::idMenuCheckCompileString = wxNewId();
 // End of Options Menu Items
 
@@ -55,6 +56,7 @@ BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
     EVT_MENU(idMenuZoomOut, encIDEFrame::onZoomOut)
 
     EVT_MENU(idMenuSetCompilerPath, encIDEFrame::onSetCompilerPath)
+    EVT_MENU(idMenuSetRiscvPath, encIDEFrame::onSetRiscvPath)
     EVT_MENU(idMenuCheckCompileString, encIDEFrame::onCheckCompileString)
 
     EVT_MENU(idMenuAbout, encIDEFrame::onAbout)
@@ -130,6 +132,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     setCompilerPathItem = new wxMenuItem(optionsMenu, idMenuSetCompilerPath, _("Set Compiler Path\tCtrl-P"), _("Set Compiler Path"), wxITEM_NORMAL);
     optionsMenu->Append(setCompilerPathItem);
+
+    setRiscvPathItem = new wxMenuItem(optionsMenu, idMenuSetRiscvPath, _("Set RISCV Path\tCtrl-R"), _("Set RISCV Path"), wxITEM_NORMAL);
+    optionsMenu->Append(setRiscvPathItem);
 
     checkCompileStringItem = new wxMenuItem(optionsMenu, idMenuCheckCompileString, _("Check Compile String\tCtrl-K"), _("Check Compile String"), wxITEM_NORMAL);
     optionsMenu->Append(checkCompileStringItem);
@@ -330,16 +335,25 @@ void encIDEFrame::onZoomOut(wxCommandEvent& event)
 void encIDEFrame::onSetCompilerPath(wxCommandEvent& event)
 {
     wxTextEntryDialog setCompilerPathDlg(this, wxEmptyString, "Set Compiler Path", 
-        wxEmptyString /*TODO add compiler path from config file*/, wxOK | wxCANCEL, wxDefaultPosition);
+        wxEmptyString /*TODO add compiler path from config file*/, wxOK | wxCANCEL | wxCENTRE, wxDefaultPosition);
     
     if(setCompilerPathDlg.ShowModal() == wxID_OK)
         compilerPath = setCompilerPathDlg.GetValue();
 }
 
+void encIDEFrame::onSetRiscvPath(wxCommandEvent& event)
+{
+    wxTextEntryDialog setRiscvPathDlg(this, wxEmptyString, "Set RISCV Path", 
+        wxEmptyString /*TODO add riscv path from config file*/, wxOK | wxCANCEL | wxCENTRE, wxDefaultPosition);
+    
+    if(setRiscvPathDlg.ShowModal() == wxID_OK)
+        riscvRootPath = setRiscvPathDlg.GetValue();
+}
+
 void encIDEFrame::onCheckCompileString(wxCommandEvent& event)
 {
     wxTextEntryDialog checkCompileStringDlg(this, wxEmptyString, "Check Compile String", 
-        wxGetApp().compileString, wxTE_MULTILINE | wxOK | wxCANCEL, wxDefaultPosition);
+        wxGetApp().compileString, wxTE_MULTILINE | wxOK | wxCANCEL | wxCENTRE, wxDefaultPosition);
     
     if(checkCompileStringDlg.ShowModal() == wxID_OK)
         wxGetApp().compileString = checkCompileStringDlg.GetValue();
