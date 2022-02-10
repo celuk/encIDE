@@ -42,6 +42,7 @@ const long encIDEFrame::idMenuSetCompilerPath = wxNewId();
 const long encIDEFrame::idMenuSetRiscvPath = wxNewId();
 const long encIDEFrame::idMenuSetRiscvTargetOption = wxNewId();
 const long encIDEFrame::idMenuCheckCompileString = wxNewId();
+const long encIDEFrame::idMenuAddCustomEncryptor = wxNewId();
 // End of Options Menu Items
 
 // Help Menu Items
@@ -66,6 +67,7 @@ BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
     EVT_MENU(idMenuSetRiscvPath, encIDEFrame::onSetRiscvPath)
     EVT_MENU(idMenuSetRiscvTargetOption, encIDEFrame::onSetRiscvTargetOption)
     EVT_MENU(idMenuCheckCompileString, encIDEFrame::onCheckCompileString)
+    EVT_MENU(idMenuAddCustomEncryptor, encIDEFrame::onAddCustomEncryptor)
 
     EVT_MENU(idMenuAbout, encIDEFrame::onAbout)
 END_EVENT_TABLE()
@@ -82,6 +84,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     riscvTargetOption = "";
     extraCompileFlags = "";
     lastOpenedFile = "";
+
+    // TODO Get custom-encryptor.cpp file location from cmake or config file
+    customEncryptorPath = "/Users/shc/wx/encIDE/build/bin/custom-encryptor.cpp";
     
     screenRatio = DEFAULT_SCREEN_RATIO;
 
@@ -161,6 +166,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     checkCompileStringItem = new wxMenuItem(optionsMenu, idMenuCheckCompileString, _("Check Compile String\tCtrl-K"), _("Check Compile String"), wxITEM_NORMAL);
     optionsMenu->Append(checkCompileStringItem);
+
+    addCustomEncryptorItem = new wxMenuItem(optionsMenu, idMenuAddCustomEncryptor, _("Add Custom Encryptor\tCtrl-H"), _("Add custom encryptor to hex obfuscator"), wxITEM_NORMAL);
+    optionsMenu->Append(addCustomEncryptorItem);
     // End of Options Menu
 
     // Help Menu
@@ -365,6 +373,7 @@ void encIDEFrame::onSaveFile(wxCommandEvent& event)
 void encIDEFrame::onCompileFile(wxCommandEvent& event)
 {
     // TODO open command prompt and execute command
+    // TODO make a decision between open command prompt or show result of execution that fails or not
 
     //wxExecute("osascript -e 'tell application \"Terminal\" to activate' -e 'tell application \"Terminal\" to do script \"gcc " + filePath + " ; " + filePath.erase(filePath.rfind('/')) + "/a.out" + "\"'");
     
@@ -427,6 +436,33 @@ void encIDEFrame::onCheckCompileString(wxCommandEvent& event)
     
     if(checkCompileStringDlg.ShowModal() == wxID_OK)
         wxGetApp().compileString = checkCompileStringDlg.GetValue();
+}
+
+void encIDEFrame::onAddCustomEncryptor(wxCommandEvent& event)
+{
+    // When selected Add Custom Encryptor
+    // TODO add more robust control
+    if(addCustomEncryptorItem->GetHelp() == "Add custom encryptor to hex obfuscator"){
+        // TODO make a decision here to get default text from customEncryptorPath or set default textEditor
+        // TODO make a decision to add config file whether custom encryptor added before or not
+
+        statusBar->PushStatusText("Add custom encryptor to --> " + customEncryptorPath);
+
+        addCustomEncryptorItem->SetItemLabel(_("Push Custom Encryptor\tCtrl-J"));
+        addCustomEncryptorItem->SetHelp("Push custom encryptor and build the compiler and hex obfuscator");
+    }
+    else{
+        // TODO add redirect textEditor to customEncryptorPath execution
+        // TODO add custom encryptor cmake build execution (cmake --build ericsbuildpath)
+        textEditor->SaveFile(customEncryptorPath);
+
+        wxMessageBox("CUSTOM ENCRYPTOR PUSHED!");
+
+        statusBar->PushStatusText("");
+
+        addCustomEncryptorItem->SetItemLabel(_("Add Custom Encryptor\tCtrl-H"));
+        addCustomEncryptorItem->SetHelp("Add custom encryptor to hex obfuscator");
+    }
 }
 
 void encIDEFrame::onAbout(wxCommandEvent& event)
