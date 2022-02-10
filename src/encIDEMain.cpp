@@ -579,6 +579,8 @@ void encIDEFrame::animateWindowWhileClosing(){
 
             SetSize(wxSize((int)(windowWidth - wW), (int)(windowHeight - wW)));
 
+            textEditor->SetZoom(zoomLevel - 5 * i);
+
             wxYield();
             wxMilliSleep(WINDOW_ANIMATION_MILLI_SECONDS);
         }
@@ -612,6 +614,8 @@ void encIDEFrame::animateWindowWhileClosing(){
             wH += windowHeight * WINDOW_ANIMATION_RATIO * i;
 
             SetSize(wxSize((int)(windowWidth - wW), (int)(windowHeight - wW)));
+
+            textEditor->SetZoom(zoomLevel - 5 * i);
 
             wxYield();
             wxMilliSleep(WINDOW_ANIMATION_MILLI_SECONDS);
