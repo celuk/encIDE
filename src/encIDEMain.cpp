@@ -25,29 +25,30 @@
 #define WINDOW_ANIMATION_RATIO 0.03
 #define WINDOW_ANIMATION_MILLI_SECONDS 20
 
-// File Menu Items
+// File Menu Item IDs
 const long encIDEFrame::idMenuOpenFile = wxNewId();
 const long encIDEFrame::idMenuSaveFile = wxNewId();
 const long encIDEFrame::idMenuCompileFile = wxNewId();
 const long encIDEFrame::idMenuQuit = wxNewId();
-// End of File Menu Items
+// End of File Menu Item IDs
 
-// View Menu Items
+// View Menu Item IDs
 const long encIDEFrame::idMenuZoomIn = wxNewId();
 const long encIDEFrame::idMenuZoomOut = wxNewId();
-// End of View Menu Items
+// End of View Menu Item IDs
 
-// Options Menu Items
+// Options Menu Item IDs
 const long encIDEFrame::idMenuSetCompilerPath = wxNewId();
 const long encIDEFrame::idMenuSetRiscvPath = wxNewId();
 const long encIDEFrame::idMenuSetRiscvTargetOption = wxNewId();
+const long encIDEFrame::idMenuAddExtraCompilerFlags = wxNewId();
 const long encIDEFrame::idMenuCheckCompileString = wxNewId();
 const long encIDEFrame::idMenuAddCustomEncryptor = wxNewId();
-// End of Options Menu Items
+// End of Options Menu Item IDs
 
-// Help Menu Items
+// Help Menu Item IDs
 const long encIDEFrame::idMenuAbout = wxNewId();
-// End of Help Menu Items
+// End of Help Menu Item IDs
 
 const long encIDEFrame::idStatusBar = wxNewId();
 
@@ -55,21 +56,30 @@ const long encIDEFrame::idTextEditor = wxNewId();
 
 
 BEGIN_EVENT_TABLE(encIDEFrame, wxFrame)
+    // File Menu Events
     EVT_MENU(idMenuOpenFile, encIDEFrame::onOpenFile)
     EVT_MENU(idMenuSaveFile, encIDEFrame::onSaveFile)
     EVT_MENU(idMenuCompileFile, encIDEFrame::onCompileFile)
     EVT_MENU(idMenuQuit, encIDEFrame::onQuit)
+    // End of File Menu Events
 
+    // View Menu Events
     EVT_MENU(idMenuZoomIn, encIDEFrame::onZoomIn)
     EVT_MENU(idMenuZoomOut, encIDEFrame::onZoomOut)
+    // End of View Menu Events
 
+    // Options Menu Events
     EVT_MENU(idMenuSetCompilerPath, encIDEFrame::onSetCompilerPath)
     EVT_MENU(idMenuSetRiscvPath, encIDEFrame::onSetRiscvPath)
     EVT_MENU(idMenuSetRiscvTargetOption, encIDEFrame::onSetRiscvTargetOption)
+    EVT_MENU(idMenuAddExtraCompilerFlags, encIDEFrame::onAddExtraCompilerFlags)
     EVT_MENU(idMenuCheckCompileString, encIDEFrame::onCheckCompileString)
     EVT_MENU(idMenuAddCustomEncryptor, encIDEFrame::onAddCustomEncryptor)
+    // End of Options Menu Events
 
+    // Help Menu Events
     EVT_MENU(idMenuAbout, encIDEFrame::onAbout)
+    // End of Help Events
 END_EVENT_TABLE()
 
 
@@ -82,7 +92,7 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     compilerPath = "";
     riscvRootPath = "";
     riscvTargetOption = "";
-    extraCompileFlags = "";
+    extraCompilerFlags = "";
     lastOpenedFile = "";
 
     // TODO Get custom-encryptor.cpp file location from cmake or config file
@@ -114,6 +124,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     else
         this->SetPosition(wxPoint(windowPositionX, windowPositionY));
 
+    // TODO make help descriptions more clear
+    // TODO set keyboard shortcuts to seperate variables
+    // MenuBar
     topMenuBar = new wxMenuBar();
 
     // TODO set menus within a function
@@ -164,6 +177,9 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     setRiscvTargetOptionItem = new wxMenuItem(optionsMenu, idMenuSetRiscvTargetOption, _("Set RISCV Target Options\tCtrl-T"), _("Set RISCV Target Options"), wxITEM_NORMAL);
     optionsMenu->Append(setRiscvTargetOptionItem);
 
+    addExtraCompilerFlagsItem = new wxMenuItem(optionsMenu, idMenuAddExtraCompilerFlags, _("Add Extra Compiler Flags\tCtrl-G"), _("Add Optional Compiler Flags"), wxITEM_NORMAL);
+    optionsMenu->Append(addExtraCompilerFlagsItem);
+
     checkCompileStringItem = new wxMenuItem(optionsMenu, idMenuCheckCompileString, _("Check Compile String\tCtrl-K"), _("Check Compile String"), wxITEM_NORMAL);
     optionsMenu->Append(checkCompileStringItem);
 
@@ -180,6 +196,7 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
     // End of Help Menu
 
     SetMenuBar(topMenuBar);
+    // End of MenuBar
 
     // Status Bar
     statusBar = new wxStatusBar(this, idStatusBar, wxSTB_DEFAULT_STYLE, _("StatusBar"));
@@ -192,29 +209,8 @@ encIDEFrame::encIDEFrame(wxWindow* parent, wxWindowID id)
 
     // C++ Text Editor
     textEditor = new wxStyledTextCtrl(this, idTextEditor, wxDefaultPosition, wxDefaultSize, 0, "TextEditor");
-    setTextEditorStyle();
-
-    if(lastOpenedFile != wxEmptyString){
-        wxTextFile openTextFile;
-        openTextFile.Open(lastOpenedFile);
-        if(openTextFile.IsOpened()){
-            filePath = lastOpenedFile;
-
-            textEditor->ClearAll();
-
-            textEditor->AddText(openTextFile.GetFirstLine());
-            textEditor->AddText("\r\n");
-            while(!openTextFile.Eof()){
-                textEditor->AddText(openTextFile.GetNextLine());
-                textEditor->AddText("\r\n");
-            }
-
-            statusBar->PushStatusText(filePath);
-
-            openTextFile.Close();
-        }
-        else wxMessageBox("Last opened file cannot found!");
-    }
+    setTextEditorAndStyle();
+    // End of C++ Text Editor
 }
 
 encIDEFrame::~encIDEFrame()
@@ -223,7 +219,7 @@ encIDEFrame::~encIDEFrame()
     this->Destroy();
 }
 
-void encIDEFrame::setTextEditorStyle(){
+void encIDEFrame::setTextEditorAndStyle(){
     textEditor->StyleSetBackground(wxSTC_STYLE_DEFAULT, TEXT_EDITOR_COLOR);
 
     // To not erase background color while writing
@@ -316,6 +312,28 @@ void encIDEFrame::setTextEditorStyle(){
 
     if(zoomLevel != -1)
         textEditor->SetZoom(zoomLevel);
+
+    if(lastOpenedFile != wxEmptyString){
+        wxTextFile openTextFile;
+        openTextFile.Open(lastOpenedFile);
+        if(openTextFile.IsOpened()){
+            filePath = lastOpenedFile;
+
+            textEditor->ClearAll();
+
+            textEditor->AddText(openTextFile.GetFirstLine());
+            textEditor->AddText("\r\n");
+            while(!openTextFile.Eof()){
+                textEditor->AddText(openTextFile.GetNextLine());
+                textEditor->AddText("\r\n");
+            }
+
+            statusBar->PushStatusText(filePath);
+
+            openTextFile.Close();
+        }
+        else wxMessageBox("Last opened file cannot found!");
+    }
 }
 
 void encIDEFrame::onOpenFile(wxCommandEvent& event)
@@ -429,6 +447,15 @@ void encIDEFrame::onSetRiscvTargetOption(wxCommandEvent& event)
         riscvTargetOption = setRiscvTargetOptionDlg.GetValue();
 }
 
+void encIDEFrame::onAddExtraCompilerFlags(wxCommandEvent& event)
+{
+    wxTextEntryDialog addExtraCompilerFlagsDlg(this, wxEmptyString, "Add Extra Compiler Flags", 
+        extraCompilerFlags, wxTE_MULTILINE | wxOK | wxCANCEL | wxCENTRE, wxDefaultPosition);
+    
+    if(addExtraCompilerFlagsDlg.ShowModal() == wxID_OK)
+        extraCompilerFlags = addExtraCompilerFlagsDlg.GetValue();
+}
+
 void encIDEFrame::onCheckCompileString(wxCommandEvent& event)
 {
     wxTextEntryDialog checkCompileStringDlg(this, wxEmptyString, "Check Compile String", 
@@ -438,6 +465,8 @@ void encIDEFrame::onCheckCompileString(wxCommandEvent& event)
         wxGetApp().compileString = checkCompileStringDlg.GetValue();
 }
 
+// TODO add cancelling custom encryptor addition
+// (maybe when a transition happened to another file, popstatustext, catch popping and cancel)
 void encIDEFrame::onAddCustomEncryptor(wxCommandEvent& event)
 {
     // When selected Add Custom Encryptor
@@ -491,8 +520,8 @@ void encIDEFrame::readConfigs()
         // third line is riscv target option
         riscvTargetOption = getSubStrAfter(configFile.GetNextLine(), "=");
 
-        // fourth line is extra compile flags
-        extraCompileFlags = getSubStrAfter(configFile.GetNextLine(), "=");
+        // fourth line is extra compiler flags
+        extraCompilerFlags = getSubStrAfter(configFile.GetNextLine(), "=");
 
         // fifth line is last opened file
         lastOpenedFile = getSubStrAfter(configFile.GetNextLine(), "=");
@@ -547,8 +576,8 @@ void encIDEFrame::resetConfigs()
         // third line is riscv target option
         configFile.AddLine("riscvtargetoption=" + riscvTargetOption);
 
-        // fourth line is extra compile flags
-        configFile.AddLine("extracompileflags=" + extraCompileFlags);
+        // fourth line is extra compiler flags
+        configFile.AddLine("extracompilerflags=" + extraCompilerFlags);
 
         // fifth line is last opened file
         configFile.AddLine("lastopenedfile=" + lastOpenedFile);
@@ -601,6 +630,7 @@ void encIDEFrame::whileAppClosing(){
     animateWindowWhileClosing();
 }
 
+// TODO make here more configurable
 void encIDEFrame::animateWindowWhileClosing(){
     srand(time(NULL));
     bool randNum = (bool)(rand() % 2);

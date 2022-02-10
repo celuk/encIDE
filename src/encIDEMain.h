@@ -64,6 +64,9 @@ class encIDEFrame: public wxFrame
         wxMenuItem* setRiscvTargetOptionItem;
         static const long idMenuSetRiscvTargetOption;
 
+        wxMenuItem* addExtraCompilerFlagsItem;
+        static const long idMenuAddExtraCompilerFlags;
+
         wxMenuItem* checkCompileStringItem;
         static const long idMenuCheckCompileString;
 
@@ -88,11 +91,11 @@ class encIDEFrame: public wxFrame
         wxString compilerPath;
         wxString riscvRootPath;
         wxString riscvTargetOption;
-        wxString extraCompileFlags;
+        wxString extraCompilerFlags;
         wxString lastOpenedFile;
         wxString customEncryptorPath;
 
-        void setTextEditorStyle();
+        void setTextEditorAndStyle();
 
         void onOpenFile(wxCommandEvent& event);
         void onSaveFile(wxCommandEvent& event);
@@ -105,6 +108,7 @@ class encIDEFrame: public wxFrame
         void onSetCompilerPath(wxCommandEvent& event);
         void onSetRiscvPath(wxCommandEvent& event);
         void onSetRiscvTargetOption(wxCommandEvent& event);
+        void onAddExtraCompilerFlags(wxCommandEvent& event);
         void onCheckCompileString(wxCommandEvent& event);
         void onAddCustomEncryptor(wxCommandEvent& event);
 
