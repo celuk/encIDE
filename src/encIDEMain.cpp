@@ -9,6 +9,9 @@
 #include <wx/textfile.h>
 #include <wx/textdlg.h>
 
+#include <cstdlib>
+#include <ctime>
+
 #define DEFAULT_SCREEN_RATIO 0.9
 
 #define TEXT_EDITOR_COLOR wxColor(180, 181, 185)
@@ -563,16 +566,55 @@ void encIDEFrame::whileAppClosing(){
 }
 
 void encIDEFrame::animateWindowWhileClosing(){
-    double wW = 0;
-    double wH = 0;
+    srand(time(NULL));
+    bool randNum = (bool)(rand() % 2);
 
-    for(int i=0; wW < windowWidth; i++){
-        wW += windowWidth * WINDOW_ANIMATION_RATIO * i;
-        wH += windowHeight * WINDOW_ANIMATION_RATIO * i;
+    if(randNum == false){
+        double wW = 0;
+        double wH = 0;
 
-        SetSize(wxSize((int)(windowWidth - wW), (int)(windowHeight - wW)));
+        for(int i=0; wW < windowWidth; i++){
+            wW += windowWidth * WINDOW_ANIMATION_RATIO * i;
+            wH += windowHeight * WINDOW_ANIMATION_RATIO * i;
 
+            SetSize(wxSize((int)(windowWidth - wW), (int)(windowHeight - wW)));
+
+            wxYield();
+            wxMilliSleep(WINDOW_ANIMATION_MILLI_SECONDS);
+        }
+    }
+    else{
+        // TODO make these member variables (using also in constructor) if we will use this animation
+        wxDisplay display(wxDisplay::GetFromWindow(this));
+        wxRect activeScreenRect = display.GetClientArea();
+
+        SetPosition(wxPoint(windowPositionX + activeScreenRect.GetWidth()*0.4, windowPositionY));
         wxYield();
-        wxMilliSleep(WINDOW_ANIMATION_MILLI_SECONDS);
+        wxMilliSleep(300);
+
+        SetPosition(wxPoint(windowPositionX + activeScreenRect.GetWidth()*0.4, windowPositionY + activeScreenRect.GetHeight()*0.4));
+        wxYield();
+        wxMilliSleep(300);
+
+        SetPosition(wxPoint(windowPositionX, windowPositionY + activeScreenRect.GetHeight()*0.4));
+        wxYield();
+        wxMilliSleep(300);
+
+        SetPosition(wxPoint(windowPositionX, windowPositionY));
+        wxYield();
+        wxMilliSleep(300);
+
+        double wW = 0;
+        double wH = 0;
+
+        for(int i=0; wW < windowWidth; i++){
+            wW += windowWidth * WINDOW_ANIMATION_RATIO * i;
+            wH += windowHeight * WINDOW_ANIMATION_RATIO * i;
+
+            SetSize(wxSize((int)(windowWidth - wW), (int)(windowHeight - wW)));
+
+            wxYield();
+            wxMilliSleep(WINDOW_ANIMATION_MILLI_SECONDS);
+        }
     }
 }
